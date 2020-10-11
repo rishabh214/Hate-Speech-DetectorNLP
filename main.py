@@ -1,6 +1,8 @@
 import pandas as pd
 
 import nltk,re
+from gensim.models import Word2Vec
+
 from nltk.corpus import stopwords
 from  nltk.stem import SnowballStemmer
 
@@ -10,7 +12,8 @@ from  nltk.stem import SnowballStemmer
 train_df= pd.read_csv("/home/rishabh/NLP/hate speech/data.1/train_E6oV3lV.csv",index_col="id")
 test_df=pd.read_csv("/home/rishabh/NLP/hate speech/data.1/test_tweets_anuFYb8.csv",index_col="id",)
 
-train_df= train_df.iloc[1900:2000,:]
+#train_df= train_df.iloc[1900:2000,:]
+
 TEXT_CLEANING_RE = "@\S+|https?:\S+|http?:\S|[^A-Za-z0-9]+"
 
 stop_words=stopwords.words("english")
@@ -31,4 +34,19 @@ def preprocess(text,stem= True):
 
 #print(preprocess("love loving ,tvx lovely"))
 train_df['tweet1'] = train_df['tweet'].apply(lambda text: preprocess(text))
+
+
+documents = [t1.split() for t1 in train_df.tweet1] 
+
+model = Word2Vec(documents)
+
+
+words = model.wv.vocab
+
+## Finding Word Vectors
+#vector = model.wv['love']
+
+# Most similar words
+similar = model.wv.most_similar('hate')
+
 
